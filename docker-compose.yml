@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  app:
+    image: php:8.2-cli
+    container_name: laravel_app
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8088:8088"
+    command: php artisan serve --host=0.0.0.0 --port=8088
+    depends_on:
+      - mysql
+
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  composer:
+    image: composer:latest
+    container_name: composer
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    command: ["composer", "install"]
+
+volumes:
+  dbdata:
